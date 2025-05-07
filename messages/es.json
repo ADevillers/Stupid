@@ -1,0 +1,10 @@
+{
+    "welcome": "Bienvenido a nuestro sitio",
+    "description": "Este es un sitio web multilingüe",
+    "language": "Idioma",
+    "navigation": {
+        "home": "Inicio",
+        "about": "Acerca de",
+        "contact": "Contacto"
+    }
+}
