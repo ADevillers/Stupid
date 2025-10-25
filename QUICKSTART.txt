@@ -1,0 +1,44 @@
+╔═══════════════════════════════════════════════════════════╗
+║                   PROJECT STUPID                          ║
+║          The AI that starts with nothing                  ║
+║                 QUICK START GUIDE                         ║
+╚═══════════════════════════════════════════════════════════╝
+
+📋 PREREQUISITES:
+   - Node.js 18.17.0+
+   - OpenAI API key (get from platform.openai.com/api-keys)
+
+⚡ 3-STEP SETUP:
+
+   1. Install dependencies:
+      pnpm install
+
+   2. Create .env.local file with your OpenAI API key:
+      OPENAI_API_KEY=sk-your-key-here
+
+   3. Run dev server:
+      pnpm dev
+
+🌐 OPEN: http://localhost:3000
+
+🎯 FIRST TEST:
+   1. Click "Start Teaching"
+   2. Click "New Concept"
+   3. Name: "Photosynthesis", Category: Biology
+   4. Type: "Photosynthesis is how plants make food"
+   5. Watch the AI learn in real-time!
+
+📚 DOCUMENTATION:
+   - HACKATHON_READY.md  → Complete guide for demo
+   - SETUP.md            → Detailed testing instructions
+   - README.md           → Full project documentation
+   - PLANNING.md         → Architecture decisions
+
+💰 COST: ~$0.20-0.50 for testing, <$1 for full hackathon demo
+
+🚀 DEPLOYMENT: Push to GitHub → Connect to Vercel → Add API key → Deploy!
+
+✨ You're all set! Read HACKATHON_READY.md for demo script.
+
+Good luck! 🧠
+
