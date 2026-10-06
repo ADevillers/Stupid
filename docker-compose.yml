@@ -1,0 +1,10 @@
+services:
+  app:
+    build:
+      context: .
+    container_name: stupid-app
+    ports:
+      - "3002:3000"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped

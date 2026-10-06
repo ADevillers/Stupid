@@ -5,40 +5,32 @@
 ╚═══════════════════════════════════════════════════════════╝
 
 📋 PREREQUISITES:
-   - Node.js 18.17.0+
-   - OpenAI API key (get from platform.openai.com/api-keys)
+   - Node.js 24+
+   - pnpm 12 (corepack enable)
 
 ⚡ 3-STEP SETUP:
 
    1. Install dependencies:
       pnpm install
 
-   2. Create .env.local file with your OpenAI API key:
-      OPENAI_API_KEY=sk-your-key-here
+   2. No API keys. Nothing to put in .env.
 
-   3. Run dev server:
+   3. Run:
       pnpm dev
 
 🌐 OPEN: http://localhost:3000
+🌍 LIVE: https://stupid.dev.furet.network
 
 🎯 FIRST TEST:
-   1. Click "Start Teaching"
-   2. Click "New Concept"
-   3. Name: "Photosynthesis", Category: Biology
-   4. Type: "Photosynthesis is how plants make food"
-   5. Watch the AI learn in real-time!
+   1. Type a topic and press Enter
+   2. Teach it in the chat
+   3. Watch the learning note fill from your messages
 
 📚 DOCUMENTATION:
-   - HACKATHON_READY.md  → Complete guide for demo
-   - SETUP.md            → Detailed testing instructions
-   - README.md           → Full project documentation
-   - PLANNING.md         → Architecture decisions
+   - README.md           → Project overview
+   - SETUP.md            → Testing guide
+   - HACKATHON_READY.md  → Demo script
 
-💰 COST: ~$0.20-0.50 for testing, <$1 for full hackathon demo
+💰 COST: $0 — local mock learner, no OpenAI
 
-🚀 DEPLOYMENT: Push to GitHub → Connect to Vercel → Add API key → Deploy!
-
-✨ You're all set! Read HACKATHON_READY.md for demo script.
-
-Good luck! 🧠
-
+🚀 DEPLOYMENT: Docker on the capsule → https://stupid.dev.furet.network

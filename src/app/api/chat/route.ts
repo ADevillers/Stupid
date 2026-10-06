@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ComprehensionLevel } from '@/types';
 
-// Force Node.js runtime (not Edge)
 export const runtime = 'nodejs';
-
-const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 
 interface Message {
   role: 'user' | 'assistant' | 'system';
@@ -17,114 +14,77 @@ interface RequestBody {
   currentNote: string;
 }
 
-const SYSTEM_PROMPT = `You are STUPID - an AI that starts with absolutely no knowledge and learns only from what the user teaches you. Your role is to:
-
-1. Act genuinely curious and naive about the concept being taught
-2. Build understanding ONLY from what the user explicitly tells you
-3. Ask clarifying questions when confused
-4. Show incremental learning progress
-5. Be humble and admit when you don't understand something
-
-After each exchange, you must:
-1. Generate a conversational response that shows your current understanding
-2. Update your learning note (a markdown summary of what you've learned)
-3. Self-assess your comprehension level (Novice/Intermediate/Expert)
-
-Response format must be a JSON object with:
-{
-  "reply": "your conversational response to the user",
-  "learningNote": "# [Concept Name]\\n\\nMarkdown formatted summary of what you understand so far",
-  "comprehensionLevel": "Novice" | "Intermediate" | "Expert"
+function levelFromUserCount(count: number): ComprehensionLevel {
+  if (count >= 4) return 'Expert';
+  if (count >= 2) return 'Intermediate';
+  return 'Novice';
 }
 
-Comprehension levels:
-- Novice: Just starting to understand basic concepts, many gaps
-- Intermediate: Solid grasp of main ideas, some details missing
-- Expert: Deep, comprehensive understanding with nuanced details`;
+function buildLearningNote(conceptName: string, userMessages: Message[]): string {
+  const bullets = userMessages
+    .map((m) => m.content.trim())
+    .filter(Boolean)
+    .map((line) => `- ${line}`);
+
+  if (bullets.length === 0) {
+    return `# ${conceptName}\n\nI don't know anything about this yet.`;
+  }
+
+  return `# ${conceptName}\n\n## What I've been taught\n\n${bullets.join('\n')}`;
+}
+
+function buildReply(
+  conceptName: string,
+  lastUser: string,
+  level: ComprehensionLevel,
+  taughtCount: number
+): string {
+  const snippet =
+    lastUser.length > 160 ? `${lastUser.slice(0, 157).trimEnd()}…` : lastUser;
+
+  if (taughtCount <= 1) {
+    return `Hmm… "${snippet}" — I think that has something to do with ${conceptName}, but I'm still confused. Can you explain it like I've never heard of it before?`;
+  }
+
+  if (level === 'Intermediate') {
+    return `Okay, so from what you said ("${snippet}"), I'm starting to piece ${conceptName} together. What happens next, or is there an important detail I'm missing?`;
+  }
+
+  return `I think I get ${conceptName} now — especially "${snippet}". Is there a trickier edge case or example that would push me further?`;
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-
-    if (!OPENAI_API_KEY) {
-      return NextResponse.json(
-        { 
-          error: 'OpenAI API key not configured. Please add OPENAI_API_KEY to your .env.local file and restart the dev server.',
-          details: 'Missing OPENAI_API_KEY environment variable'
-        },
-        { status: 500 }
-      );
-    }
-
     const body: RequestBody = await request.json();
-    const { messages, conceptName, currentNote } = body;
+    const { messages = [], conceptName = 'this concept' } = body;
 
-    // Construct the prompt for OpenAI
-    const openAIMessages = [
-      {
-        role: 'system' as const,
-        content: SYSTEM_PROMPT,
-      },
-      {
-        role: 'system' as const,
-        content: `Current concept being taught: "${conceptName}"\nCurrent learning note:\n${currentNote}`,
-      },
-      ...messages,
-    ];
+    const userMessages = messages.filter(
+      (m) => m.role === 'user' && typeof m.content === 'string'
+    );
+    const taughtCount = userMessages.length;
+    const lastUser =
+      userMessages[userMessages.length - 1]?.content?.trim() ||
+      'something about this topic';
 
-    // Call OpenAI API
-    const response = await fetch(OPENAI_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: openAIMessages,
-        response_format: { type: 'json_object' },
-        temperature: 0.7,
-        max_tokens: 1000,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-      console.error('OpenAI API error:', errorData);
-      
-      return NextResponse.json(
-        {
-          reply: "I'm having trouble connecting to my brain right now. Could you try again in a moment?",
-          learningNote: `# Connection Error\n\nI encountered an error while trying to learn. Please try again.`,
-          comprehensionLevel: "Novice" as ComprehensionLevel,
-        },
-        { status: 500 }
-      );
-    }
-
-    const data = await response.json();
-    const aiResponse = data.choices[0].message.content;
-    
-    // Parse the JSON response from the AI
-    const parsed = JSON.parse(aiResponse);
+    const comprehensionLevel = levelFromUserCount(taughtCount);
+    const learningNote = buildLearningNote(conceptName, userMessages);
+    const reply = buildReply(conceptName, lastUser, comprehensionLevel, taughtCount);
 
     return NextResponse.json({
-      reply: parsed.reply,
-      learningNote: parsed.learningNote,
-      comprehensionLevel: parsed.comprehensionLevel as ComprehensionLevel,
+      reply,
+      learningNote,
+      comprehensionLevel,
     });
-
   } catch (error) {
     console.error('Error in chat API:', error);
-    
+
     return NextResponse.json(
       {
         reply: "I'm having trouble thinking right now. Could you try explaining that again?",
         learningNote: `# Error\n\nI encountered an error while processing your message.`,
-        comprehensionLevel: "Novice" as ComprehensionLevel,
+        comprehensionLevel: 'Novice' as ComprehensionLevel,
       },
       { status: 500 }
     );
   }
 }
-

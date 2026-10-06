@@ -45,6 +45,13 @@ Project started: October 25, 2025
   - Product-Market Fit (Business, Novice level)
 - ✅ Added loading state with spinner during topic extraction
 
+## Completed (capsule deploy)
+- ✅ Replaced OpenAI with local mock learner (no API keys)
+- ✅ Removed `openai` dependency and `/api/extract-topic`
+- ✅ Local keyword topic classifier
+- ✅ Upgraded to Next.js 16 / React 19 / Node 24
+- ✅ Docker + public demo at https://stupid.dev.furet.network
+
 ## Backlog
 - Add more categories for knowledge tracking
 - Implement export/import functionality for concepts
@@ -54,6 +61,5 @@ Project started: October 25, 2025
 - Improve mobile responsiveness
 
 ## Discovered During Work
-- May need rate limiting for API calls
 - Could add concept search/filter functionality
 - Consider adding concept tags or categories

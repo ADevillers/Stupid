@@ -6,54 +6,19 @@ import { ChatWindow } from '@/components/ChatWindow';
 import { LearningNote } from '@/components/LearningNote';
 import { RadarChart } from '@/components/RadarChart';
 import { useConcepts } from '@/context/ConceptContext';
-import { Category } from '@/types';
-import { ArrowRight, Loader2 } from 'lucide-react';
-
-const CATEGORIES: Category[] = [
-  'Technology',
-  'Business',
-  'Education',
-  'Science',
-  'Health',
-  'Social',
-  'Arts',
-  'General',
-];
+import { ArrowRight } from 'lucide-react';
+import { classifyTopicLocally } from '@/lib/topicClassifier';
 
 export default function Home() {
   const { activeConcept, createConcept } = useConcepts();
   const [conceptInput, setConceptInput] = useState('');
-  const [isExtracting, setIsExtracting] = useState(false);
 
-  const extractTopicAndCategory = async (input: string): Promise<{ topic: string; category: Category }> => {
-    try {
-      const response = await fetch('/api/extract-topic', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ input }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to extract topic');
-      }
-
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error extracting topic:', error);
-      return { topic: input, category: 'General' };
-    }
-  };
-
-  const handleKeyDown = async (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && conceptInput.trim() && !isExtracting) {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && conceptInput.trim()) {
       e.preventDefault();
-      setIsExtracting(true);
-      
-      const { topic, category } = await extractTopicAndCategory(conceptInput.trim());
+      const { topic, category } = classifyTopicLocally(conceptInput.trim());
       createConcept(topic, category);
       setConceptInput('');
-      setIsExtracting(false);
     }
   };
 
@@ -95,19 +60,14 @@ export default function Home() {
                   placeholder="What do you want to teach?"
                   className="w-full px-6 py-4 bg-[#141414] border border-[#2a2a2a] rounded-lg text-[#e5e5e5] placeholder-neutral-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all disabled:opacity-50"
                   aria-label="Concept name input"
-                  disabled={isExtracting}
                 />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  {isExtracting ? (
-                    <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
-                  ) : (
-                    <ArrowRight className="w-5 h-5 text-neutral-600" />
-                  )}
+                  <ArrowRight className="w-5 h-5 text-neutral-600" />
                 </div>
               </div>
 
               <p className="text-sm text-neutral-500 text-center">
-                {isExtracting ? 'Analyzing your input...' : 'Press Enter to start teaching a new concept'}
+                Press Enter to start teaching a new concept
               </p>
             </div>
           </div>

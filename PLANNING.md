@@ -10,23 +10,24 @@ STUPID is an experimental web application that inverts the usual AI learning par
 - Offer a simple, calm, and slightly humorous experience
 
 ## Architecture & Structure
-- **App Router Architecture**: Using Next.js 15 app router with i18n support
+- **App Router Architecture**: Next.js 16 app router with i18n support
 - **State Management**: React Context API for in-memory concept and chat storage
-- **No Backend**: Frontend-only application with no persistence
+- **No paid APIs**: Local mock learner; no OpenAI or other external LLM
 - **File Structure**:
   - `/src/app/[locale]` - Page routes (landing, teaching interface)
   - `/src/components` - UI components (chat, concept list, markdown notes)
-  - `/src/lib` - Utilities and AI service integration
+  - `/src/lib` - Utilities, mock AI client, local topic classifier
   - `/src/context` - Global state management for concepts and sessions
   - `/src/types` - TypeScript type definitions
 
 ## Tech Stack
-- **Framework**: Next.js 15 with React 19
+- **Framework**: Next.js 16 with React 19
+- **Runtime**: Node.js 24
 - **Language**: TypeScript
-- **Styling**: TailwindCSS 4 (kraft paper aesthetic)
-- **AI Integration**: OpenAI API for conversational responses
+- **Styling**: TailwindCSS 4
+- **Learner**: Local mock in `/api/chat` (notes built from user messages)
 - **Markdown**: react-markdown for rendering learning notes
-- **Utilities**: 
+- **Utilities**:
   - clsx/tailwind-merge for conditional classes
   - lucide-react for icons
 
@@ -62,13 +63,13 @@ STUPID is an experimental web application that inverts the usual AI learning par
 - **Accessibility**: WCAG-compliant interactive elements
 
 ## Constraints
-- Frontend-only (no database, no authentication)
-- Fast response cycles (<5s per AI exchange)
+- No database, no authentication, no API keys
+- Fast response cycles (local mock, no network LLM)
 - Optimized for desktop display
 - Lightweight and stable for live demos
 
-## AI Behavior
+## Learner behavior (mock)
 - Appears naïve and curious, not sarcastic
-- Builds understanding incrementally from user input
-- Updates markdown notes to reflect learning progression
-- Self-evaluates comprehension level (Novice/Intermediate/Expert)
+- Builds the learning note from user messages only
+- Comprehension level rises with the number of user messages
+  (1 → Novice, 2–3 → Intermediate, 4+ → Expert)
