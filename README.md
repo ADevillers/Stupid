@@ -39,7 +39,7 @@ Open [http://localhost:3000](http://localhost:3000).
 ## Tech stack
 
 - Next.js 16 (App Router) + React 19
-- TypeScript 5.9
+- TypeScript 7
 - Tailwind CSS 4
 - next-intl
 - Local mock learner (`/api/chat`) — no OpenAI

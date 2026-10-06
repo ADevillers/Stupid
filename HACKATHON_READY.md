@@ -43,7 +43,7 @@ Create `Recursion`, teach briefly, switch in the sidebar, return home to show ca
 
 ## Stack
 
-- Next.js 16.3 / React 19 / TypeScript 5.9 / Tailwind 4
+- Next.js 16.3 / React 19 / TypeScript 7 / Tailwind 4
 - next-intl
 - Local `/api/chat` mock + `topicClassifier`
 
